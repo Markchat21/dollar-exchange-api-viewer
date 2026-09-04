@@ -4,11 +4,12 @@ from requests.exceptions import HTTPError, ConnectionError, Timeout
 
 
 class DollarExchangeAPI:
-    def __init__(self, url=api_url.url, status_message=None, data=None, exchange_num=None):
+    def __init__(self, url=api_url.url, status_message=None, raw_api_data=None, clean_api_data=None, dolar_type_index=None):
         self.url = url
         self.status_message = status_message
-        self.data = data
-        self.exchange_num = exchange_num
+        self.raw_api_data = raw_api_data
+        self.clean_api_data = clean_api_data
+        self.dolar_type_index = dolar_type_index
 
     # Hacemos el request a la url y manejamos las posibles excepciones
     def call(self):
@@ -30,44 +31,45 @@ class DollarExchangeAPI:
         else:
             print('Success!')
             self.status_message = None
-            self.data = response.json()
+            self.raw_api_data = response.json()
+            self.clean_api_data = self.process_api_data(self.raw_api_data)
 
     def info_buy(self):
         # Devuelve el precio de compra del tipo de cambio deseado
-        return self.data[self.exchange_num]['casa']['compra']
+        return self.clean_api_data[self.dolar_type_index]['compra']
 
     def info_sell(self):
         # Devuelve el precio de venta del tipo de cambio deseado
-        return self.data[self.exchange_num]['casa']['venta']
+        return self.clean_api_data[self.dolar_type_index]['venta']
+
+    def process_api_data(self, raw_data):
+        clean_data = {}
+        for item in raw_data:
+            exchange_type_id = item['casa']
+            clean_data[exchange_type_id] = item
+        return clean_data
 
 
 class DollarExchangeTypes(DollarExchangeAPI):
     def __init__(self):
-        DollarExchangeAPI.__init__(self, url=api_url.url, status_message=None, data=None)
+        DollarExchangeAPI.__init__(self, url=api_url.url, status_message=None)
 
     def dollar_oficial(self):
-        self.exchange_num = exchange_types['Oficial']
+        self.dolar_type_index = exchange_types['Oficial']
 
     def dollar_blue(self):
-        self.exchange_num = exchange_types['Blue']
-
-    def dollar_bcra(self):
-        self.exchange_num = exchange_types['BCRA']
+        self.dolar_type_index = exchange_types['Blue']
+        
+    def dollar_bolsa(self):
+        self.dolar_type_index = exchange_types['Bolsa']
 
     def dollar_mayorista(self):
-        self.exchange_num = exchange_types['MayoristaBancos']
-
-    def dollar_bna_billete(self):
-        self.exchange_num = exchange_types['BancoNacionBillete']
-
-    def dollar_bna_publico(self):
-        self.exchange_num = exchange_types['BancoNacionPublico']
+        self.dolar_type_index = exchange_types['Mayorista']
 
 
 # Definimos los tipos de cambio disponibles
-exchange_types = dict(Oficial=0,
-                      Blue=1,
-                      MayoristaBancos=2,
-                      BCRA=3,
-                      BancoNacionBillete=4,
-                      BancoNacionPublico=5)
+exchange_types = dict(Oficial='oficial',
+                      Blue='blue',
+                      Bolsa='bolsa',
+                      Mayorista='mayorista'
+                      )
