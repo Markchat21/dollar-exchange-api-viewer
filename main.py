@@ -16,6 +16,7 @@ def dolar_update_info():
         label_oficial.config(text=dolar_exchange_types.status_message)
         label_blue.config(text=dolar_exchange_types.status_message)
         label_bcra.config(text=dolar_exchange_types.status_message)
+        label_bolsa.config(text=dolar_exchange_types.status_message)
 
         # Mostramos un mensaje de error
         messagebox.showerror("Actulización no completada", "No se puedo actulizar la información")
@@ -31,10 +32,12 @@ def dolar_update_info():
         label_blue.config(text=f'Dolar Blue\n'
                                f'Compra: {dolar_exchange_types.info_buy()}\n'
                                f'Venta: {dolar_exchange_types.info_sell()}')
-        dolar_exchange_types.dollar_bcra()
-        label_bcra.config(text=f'Dolar BCRA\n'
+        
+        dolar_exchange_types.dollar_bolsa()
+        label_bolsa.config(text=f'Dolar Bolsa\n'
                                f'Compra: {dolar_exchange_types.info_buy()}\n'
                                f'Venta: {dolar_exchange_types.info_sell()}')
+        
         dolar_exchange_types.dollar_mayorista()
         label_mayorista.config(text=f'Dolar Mayorista\n'
                                     f'Compra: {dolar_exchange_types.info_buy()}\n'
@@ -93,9 +96,9 @@ label_blue = ttk.Label(main_window,
                        justify='center')
 label_blue.grid(column=1, row=1)
 
-# label para el dolar bcra
-label_bcra = ttk.Label(main_window,
-                       text=f'Dolar BCRA\n'
+# label para el dolar bolsa
+label_bolsa = ttk.Label(main_window,
+                       text=f'Dolar Bolsa\n'
                             f'Compra: ---,---\n'
                             f'Venta: ---,---',
                        font=("Helvetica", 14),
@@ -103,7 +106,7 @@ label_bcra = ttk.Label(main_window,
                        background='gray62',
                        wraplength=200,
                        justify='center')
-label_bcra.grid(column=2, row=1)
+label_bolsa.grid(column=2, row=1)
 
 # label para el dolar mayorista
 label_mayorista = ttk.Label(main_window,
